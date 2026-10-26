@@ -26,7 +26,7 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <style>
+    <style id="main-stylesheet">
         :root {
             --font-display: 'Orbitron', sans-serif;
             --font-sans: 'Plus Jakarta Sans', sans-serif;
@@ -143,6 +143,11 @@
                         <span id="hud-package-badge" class="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
                             Paket 1: Literasi & Pengetahuan Umum
                         </span>
+                        <button id="hud-room-badge" onclick="openShareRoomModal()" class="hidden text-[10px] font-display font-bold uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/25 hover:bg-cyan-500/40 text-cyan-200 border border-cyan-400/60 transition items-center gap-1.5 shadow-sm shadow-cyan-500/20">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span id="hud-room-code-text">ROOM: ------</span>
+                            <i class="fa-solid fa-share-nodes text-[9px] text-cyan-300"></i>
+                        </button>
                     </div>
                     <p class="text-[11px] sm:text-xs text-slate-300 font-medium flex items-center gap-2 mt-0.5">
                         <span><i class="fa-solid fa-dice text-cyan-400 mr-1"></i>Dadu: <strong>Benar/Salah</strong></span>
@@ -154,8 +159,13 @@
                 </div>
             </div>
 
-            <!-- Right: Camera, Audio & End Game Button -->
+            <!-- Right: Camera, Audio, Share Room & End Game Button -->
             <div class="hud-interactive cyber-glass rounded-2xl p-1.5 flex items-center gap-1.5 flex-wrap">
+                <button onclick="openShareRoomModal()" title="Multiplayer Daring (Kode Akses & Link HP)" class="px-2.5 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/35 text-cyan-200 border border-cyan-400/50 transition text-xs font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-wifi text-emerald-400"></i>
+                    <span class="hidden sm:inline">Room Daring</span>
+                </button>
+                <div class="h-5 w-[1px] bg-slate-700 mx-0.5"></div>
                 <button onclick="setCameraPreset('perspective')" title="Reset Tampilan 3D Perspektif" class="px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-cyan-500/20 text-slate-200 hover:text-cyan-300 border border-slate-700/80 hover:border-cyan-400/50 transition text-xs font-semibold flex items-center gap-1.5">
                     <i class="fa-solid fa-cube text-cyan-400"></i>
                     <span class="hidden lg:inline">3D View</span>
@@ -302,7 +312,7 @@
                     </div>
                     <div>
                         <h2 class="font-display font-black text-base sm:text-xl text-white tracking-wide">PERSIAPAN PERMAINAN & PAKET SOAL</h2>
-                        <p class="text-xs text-cyan-300 font-medium">Media Pembelajaran Universal • Pilih Paket Soal atau Unggah File Baru (.CSV)</p>
+                        <p class="text-xs text-cyan-300 font-medium">Mode Lokal Kelas atau Multiplayer Daring Lintas HP Real-Time</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -310,6 +320,96 @@
                         <i class="fa-solid fa-code text-xs"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- SECTION 0: MULTIPLAYER DARING LINTAS PERANGKAT / HP -->
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/80 via-slate-900/95 to-cyan-950/70 border-2 border-cyan-400/40 mb-5 space-y-3 shadow-lg">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </span>
+                        <div>
+                            <h3 class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider">
+                                Mode Permainan & Multiplayer Daring (HP / Perangkat Lain)
+                            </h3>
+                            <p class="text-[11px] text-slate-300">Seluruh pemain yang terhubung ke Kode Room akan melihat papan 3D & kuis secara real-time!</p>
+                        </div>
+                    </div>
+                    <span id="online-conn-pill" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        Siap Terhubung
+                    </span>
+                </div>
+
+                <!-- Pilihan Tab Mode: Main Lokal / Buat Room Baru / Gabung Room -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                    <button type="button" id="tab-mode-local" onclick="selectMultiplayerMode('local')" class="p-2.5 rounded-xl border-2 border-cyan-400 bg-cyan-500/20 text-left transition flex items-center gap-2.5">
+                        <i class="fa-solid fa-tv text-cyan-300 text-base"></i>
+                        <div>
+                            <div class="font-display font-bold text-xs text-white">1 Layar / Proyektor</div>
+                            <div class="text-[10px] text-slate-300">Main bersama di 1 perangkat</div>
+                        </div>
+                    </button>
+                    <button type="button" id="tab-mode-host" onclick="selectMultiplayerMode('host')" class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/80 hover:border-emerald-400/50 text-left transition flex items-center gap-2.5">
+                        <i class="fa-solid fa-satellite-dish text-emerald-400 text-base"></i>
+                        <div>
+                            <div class="font-display font-bold text-xs text-white">Buat Room Daring</div>
+                            <div class="text-[10px] text-slate-300">Bagikan Kode / Link ke HP</div>
+                        </div>
+                    </button>
+                    <button type="button" id="tab-mode-join" onclick="selectMultiplayerMode('join')" class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/80 hover:border-amber-400/50 text-left transition flex items-center gap-2.5">
+                        <i class="fa-solid fa-right-to-bracket text-amber-400 text-base"></i>
+                        <div>
+                            <div class="font-display font-bold text-xs text-white">Gabung via Kode</div>
+                            <div class="text-[10px] text-slate-300">Masukkan Kode Akses Teman</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Box Khusus Gabung Room (Muncul jika pilih Gabung via Kode) -->
+                <div id="panel-join-room" class="hidden pt-2 border-t border-slate-800/90 space-y-2.5">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-amber-300 mb-1">Masukkan Kode Akses Room (6 Karakter):</label>
+                            <input id="input-join-room-code" type="text" maxlength="8" placeholder="Contoh: UT889A" class="selectable-text w-full px-3.5 py-2 rounded-xl bg-slate-950 border-2 border-amber-400/60 focus:border-amber-400 font-display font-black text-sm sm:text-base tracking-widest uppercase text-amber-200 focus:outline-none" />
+                        </div>
+                        <div class="sm:w-48">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-cyan-300 mb-1">Peran Anda di HP Ini:</label>
+                            <select id="select-join-role" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-bold text-white focus:outline-none">
+                                <option value="ALL">Semua Tim (Bisa Klik Semua)</option>
+                                <option value="0">Tim 1 (P1)</option>
+                                <option value="1">Tim 2 (P2)</option>
+                                <option value="2">Tim 3 (P3)</option>
+                                <option value="3">Tim 4 (P4)</option>
+                                <option value="SPECTATOR">Penonton Live View</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" onclick="joinExistingOnlineRoom()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-display font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plug-circle-check"></i>
+                        <span>HUBUNGKAN KE ROOM PERMAINAN SEKARANG</span>
+                    </button>
+                </div>
+
+                <!-- Box Khusus Host Room (Muncul jika pilih Buat Room Daring) -->
+                <div id="panel-host-room-info" class="hidden pt-2 border-t border-slate-800/90 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-200">
+                    <div>
+                        <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i>
+                        Saat klik <strong>Mulai Permainan</strong>, Kode Akses & Link Room otomatis dibuat untuk dibagikan ke HP pemain lain.
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[11px] text-slate-300 font-semibold">Peran Host:</label>
+                        <select id="select-host-role" class="px-2.5 py-1 rounded-lg bg-slate-950 border border-emerald-500/40 text-xs font-bold text-emerald-300">
+                            <option value="ALL">Semua Tim / Guru (Host)</option>
+                            <option value="0">Khusus Tim 1 (P1)</option>
+                            <option value="1">Khusus Tim 2 (P2)</option>
+                            <option value="2">Khusus Tim 3 (P3)</option>
+                            <option value="3">Khusus Tim 4 (P4)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="online-room-feedback" class="hidden p-2.5 rounded-xl text-xs font-medium border"></div>
             </div>
 
             <!-- SECTION A: PILIH PAKET SOAL & TAMBAH PAKET SOAL BARU -->
@@ -461,13 +561,13 @@
                 </p>
             </div>
 
-            <!-- Dynamic Options Area (Supports BS 2-Buttons, PG 4-5 Buttons, or PGK Checkboxes) -->
+            <!-- Dynamic Options Area (Supports BS 2-Buttons, PG 5-Buttons, or PGK Checkboxes) -->
             <div id="quiz-options-grid" class="grid grid-cols-1 gap-2.5 mb-4">
                 <!-- Populated dynamically -->
             </div>
 
             <!-- Submit Button specifically for PG Kompleks (Multi-Select) -->
-            <button id="btn-submit-pgk" onclick="submitPGKAnswer()" class="hidden w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-950 font-display font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg mb-4 transition">
+            <button id="btn-submit-pgk" onclick="submitPGKAnswer()" class="hidden w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-display font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg mb-4 transition">
                 <i class="fa-solid fa-stairs mr-1.5"></i> KIRIM JAWABAN TANGGA (PG KOMPLEKS)
             </button>
 
@@ -506,14 +606,14 @@
 
             <div class="overflow-y-auto space-y-4 pr-1 text-xs sm:text-sm text-slate-300 selectable-text">
                 <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700">
-                    <h3 class="font-bold text-emerald-400 mb-1.5"><i class="fa-solid fa-1 mr-1.5"></i>Struktur Kolom Google Spreadsheet (Mendukung 4 atau 5 Opsi Jawaban: A s.d. E)</h3>
-                    <p class="text-xs text-slate-300 mb-2">Pastikan Sheet utama Anda memiliki header baris pertama: <code class="text-cyan-300">Paket | Tipe | Pertanyaan | Opsi_A | Opsi_B | Opsi_C | Opsi_D | Opsi_E | Kunci | Pembahasan</code> (Mendukung otomatis tabel 9 kolom A–D maupun 10 kolom A–E).</p>
+                    <h3 class="font-bold text-emerald-400 mb-1.5"><i class="fa-solid fa-1 mr-1.5"></i>Struktur Kolom Google Spreadsheet (Baris 1: A1 s.d. J1)</h3>
+                    <p class="text-xs text-slate-300 mb-2">Pastikan Sheet utama Anda memiliki header baris pertama: <code class="text-cyan-300">Paket | Tipe | Pertanyaan | Opsi_A | Opsi_B | Opsi_C | Opsi_D | Opsi_E | Kunci | Pembahasan</code>.</p>
                     <p class="text-xs text-amber-300"><i class="fa-solid fa-key mr-1"></i>URL Web App Anda tertanam di variabel <code class="bg-slate-950 px-1.5 py-0.5 rounded text-white">const GAS_WEB_APP_URL</code> pada bagian atas script kode HTML ini.</p>
                 </div>
 
                 <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700">
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="font-bold text-cyan-400"><i class="fa-solid fa-2 mr-1.5"></i>Kode Lengkap Google Apps Script (Mendukung 5 Pilihan Opsi A–E & Unggah Paket)</h3>
+                        <h3 class="font-bold text-cyan-400"><i class="fa-solid fa-2 mr-1.5"></i>Kode Lengkap Google Apps Script (Mendukung 5 Opsi Jawaban A s.d. E)</h3>
                         <button onclick="copyGasCode()" class="px-3 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5">
                             <i class="fa-solid fa-copy"></i> <span id="copy-gas-label">Salin Kode GAS</span>
                         </button>
@@ -521,44 +621,25 @@
                     <pre id="gas-code-block" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-emerald-300 overflow-x-auto font-mono leading-relaxed">function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var rows = sheet.getDataRange().getValues();
-  if (rows.length &lt; 2) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", questions: [] }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  var headers = rows[0].map(function(h) { return String(h || "").trim().toLowerCase(); });
-  var hasOpsiE = headers.indexOf("opsi_e") !== -1 || headers.indexOf("opsie") !== -1 || rows[0].length &gt;= 10;
   var data = [];
 
   for (var i = 1; i &lt; rows.length; i++) {
     var row = rows[i];
     if (!row[0] || !row[2]) continue;
-
-    var options = [
-      String(row[3] || "").trim(),
-      String(row[4] || "").trim(),
-      String(row[5] || "").trim(),
-      String(row[6] || "").trim()
-    ];
-    var kunci = "";
-    var explanation = "";
-
-    if (hasOpsiE) {
-      options.push(String(row[7] || "").trim());
-      kunci = String(row[8] || "").trim().toUpperCase();
-      explanation = String(row[9] || "").trim();
-    } else {
-      kunci = String(row[7] || "").trim().toUpperCase();
-      explanation = String(row[8] || "").trim();
-    }
-
+    var hasTenCols = row.length &gt;= 10;
     data.push({
       paket: String(row[0]).trim(),
       tipe: String(row[1]).trim().toUpperCase(), // BS, PG, atau PGK
       q: String(row[2]).trim(),
-      options: options,
-      kunci: kunci,
-      explanation: explanation
+      options: [
+        String(row[3] || "").trim(),
+        String(row[4] || "").trim(),
+        String(row[5] || "").trim(),
+        String(row[6] || "").trim(),
+        hasTenCols ? String(row[7] || "").trim() : ""
+      ],
+      kunci: String(hasTenCols ? row[8] : row[7]).trim().toUpperCase(),
+      explanation: String(hasTenCols ? (row[9] || "") : (row[8] || "")).trim()
     });
   }
 
@@ -566,41 +647,6 @@
     status: "success",
     questions: data
   })).setMimeType(ContentService.MimeType.JSON);
-}
-
-// Menyimpan paket soal baru yang diunggah pengguna dari aplikasi web ke Spreadsheet
-function doPost(e) {
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var payload = JSON.parse(e.postData.contents);
-    var items = payload.questions || [];
-
-    items.forEach(function(item) {
-      var opts = item.options || ["", "", "", "", ""];
-      sheet.appendRow([
-        item.paket || "Paket Baru",
-        item.tipe || "PG",
-        item.q || "",
-        opts[0] || "",
-        opts[1] || "",
-        opts[2] || "",
-        opts[3] || "",
-        opts[4] || "",
-        item.kunci || "A",
-        item.explanation || ""
-      ]);
-    });
-
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "success",
-      added: items.length
-    })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      message: err.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
 }</pre>
                 </div>
             </div>
@@ -657,8 +703,197 @@ function doPost(e) {
         </div>
     </div>
 
+    <!-- ==================== MODAL 6: BAGIKAN KODE AKSES & LINK MULTIPLAYER DARING ==================== -->
+    <div id="modal-share-room" class="fixed inset-0 z-[55] hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="cyber-glass-strong rounded-3xl max-w-lg w-full p-5 sm:p-7 border-2 border-cyan-400/60 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 text-xl">
+                        <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-black text-base sm:text-lg text-white"> AKSES ROOM MULTIPLAYER DARING</h3>
+                        <p class="text-xs text-cyan-300">Pemain di HP lain akan melihat papan & soal yang sama persis</p>
+                    </div>
+                </div>
+                <button onclick="closeShareRoomModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Jika Belum Aktif Room Online -->
+            <div id="share-room-inactive-box" class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700 text-center space-y-3 mb-4">
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    Saat ini Anda bermain dalam <strong>Mode 1 Perangkat (Lokal)</strong>. Aktifkan Room Daring agar permainan yang sedang berlangsung ini langsung memiliki <strong>Kode Akses</strong> & <strong>Link Undangan</strong> untuk dibuka di HP pemain lain!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="activateLiveRoomFromCurrentGame()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-500 text-slate-950 font-display font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg">
+                        <i class="fa-solid fa-satellite-dish mr-1.5"></i> Buat Kode Akses untuk Sesi Ini
+                    </button>
+                    <button onclick="closeShareRoomModal(); openSetupModal(); selectMultiplayerMode('join');" class="py-3 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold text-xs">
+                        Gabung ke Room Lain
+                    </button>
+                </div>
+            </div>
+
+            <!-- Jika Room Online Sudah Aktif -->
+            <div id="share-room-active-box" class="hidden space-y-4">
+                <div class="p-4 rounded-2xl bg-slate-900/95 border-2 border-emerald-400/50 text-center">
+                    <span class="text-[10px] font-display font-bold uppercase tracking-widest text-emerald-300">KODE AKSES ROOM DARING</span>
+                    <div class="flex items-center justify-center gap-3 mt-1">
+                        <span id="share-modal-room-code" class="font-display font-black text-3xl sm:text-4xl tracking-widest text-white select-all">UT889A</span>
+                        <button onclick="copyRoomCodeText()" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-copy"></i> <span id="lbl-copy-code">Salin Kode</span>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1.5">Pemain lain dapat memasukkan kode di atas pada menu <strong>Gabung via Kode</strong></p>
+                </div>
+
+                <!-- Link Undangan Otomatis (?room=KODE) -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-700 space-y-2">
+                    <label class="block text-[11px] font-bold text-cyan-300 uppercase tracking-wider">
+                        <i class="fa-solid fa-link mr-1"></i> Link Akses Langsung (Mengandung Kode Room):
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input id="share-modal-room-link" type="text" readonly class="selectable-text flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 font-mono focus:outline-none" />
+                        <button onclick="copyRoomInviteLink()" class="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shrink-0 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-share-from-square"></i> <span id="lbl-copy-link">Salin Link</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pilihan Peran Tim di Perangkat Ini -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-700 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-white">Kendali Tim di Perangkat Ini:</div>
+                        <div class="text-[11px] text-slate-400">Pilih tim Anda atau pilih Semua Tim</div>
+                    </div>
+                    <select id="select-active-my-role" onchange="updateMyLocalRole(this.value)" class="px-3 py-2 rounded-xl bg-slate-950 border border-cyan-400/50 text-xs font-bold text-cyan-300">
+                        <option value="ALL">Semua Tim (Bebas Kendali)</option>
+                        <option value="0">Tim 1 (P1)</option>
+                        <option value="1">Tim 2 (P2)</option>
+                        <option value="2">Tim 3 (P3)</option>
+                        <option value="3">Tim 4 (P4)</option>
+                        <option value="SPECTATOR">Penonton Saja</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button onclick="leaveOnlineRoom()" class="px-4 py-2.5 rounded-xl bg-rose-600/25 hover:bg-rose-600/40 text-rose-300 border border-rose-500/40 font-bold text-xs">
+                        Putuskan Room Daring
+                    </button>
+                    <button onclick="closeShareRoomModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs">
+                        Tutup & Lanjut Main
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FIREBASE REALTIME CLOUD SYNC MODULE ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        window.CloudRoomBridge = {
+            ready: false,
+            db: null,
+            auth: null,
+            user: null,
+            appId: typeof __app_id !== 'undefined' ? __app_id : 'ular-tangga-3d-arena',
+            unsubscribeRoom: null,
+
+            async init() {
+                try {
+                    if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                        return false;
+                    }
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    this.db = getFirestore(app);
+                    this.auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(this.auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(this.auth);
+                    }
+
+                    this.user = this.auth.currentUser;
+                    onAuthStateChanged(this.auth, (u) => { this.user = u; });
+                    this.ready = true;
+                    return true;
+                } catch (e) {
+                    console.warn("Info Cloud Bridge:", e);
+                    return false;
+                }
+            },
+
+            getRoomDocRef(roomCode) {
+                return doc(this.db, 'artifacts', this.appId, 'public', 'data', 'ut3d_rooms', String(roomCode).toUpperCase());
+            },
+
+            async pushRoomState(roomCode, statePayload) {
+                if (!this.ready || !this.user || !roomCode) return false;
+                try {
+                    const ref = this.getRoomDocRef(roomCode);
+                    await setDoc(ref, statePayload);
+                    return true;
+                } catch (e) {
+                    console.warn("Gagal menyimpan state room ke Firestore:", e);
+                    return false;
+                }
+            },
+
+            async fetchRoomOnce(roomCode) {
+                if (!this.ready || !this.user || !roomCode) return null;
+                try {
+                    const ref = this.getRoomDocRef(roomCode);
+                    const snap = await getDoc(ref);
+                    return snap.exists() ? snap.data() : null;
+                } catch (e) {
+                    return null;
+                }
+            },
+
+            listenToRoom(roomCode, onUpdateCallback) {
+                if (this.unsubscribeRoom) {
+                    this.unsubscribeRoom();
+                    this.unsubscribeRoom = null;
+                }
+                if (!this.ready || !this.user || !roomCode) return;
+                const ref = this.getRoomDocRef(roomCode);
+                this.unsubscribeRoom = onSnapshot(
+                    ref,
+                    (snap) => {
+                        if (snap.exists()) {
+                            onUpdateCallback(snap.data());
+                        }
+                    },
+                    (err) => {
+                        console.warn("Snapshot Room Error:", err);
+                    }
+                );
+            },
+
+            stopListening() {
+                if (this.unsubscribeRoom) {
+                    this.unsubscribeRoom();
+                    this.unsubscribeRoom = null;
+                }
+            }
+        };
+
+        window.CloudRoomBridge.init().then((ok) => {
+            if (typeof window.onCloudBridgeInitialized === 'function') {
+                window.onCloudBridgeInitialized(ok);
+            }
+        });
+    </script>
+
     <!-- ==================== JAVASCRIPT LOGIC ==================== -->
-    <script>
+    <script id="main-game-script">
         /* =====================================================================
            0. KONFIGURASI URL GOOGLE APPS SCRIPT (TERTANAM DI KODE)
            Ganti URL di bawah ini dengan URL Web App Google Apps Script Anda!
@@ -960,6 +1195,597 @@ function doPost(e) {
         let usedIndicesByType = { BS: [], PG: [], PGK: [] };
         let pendingQuizContext = null;
         let pgkSelectedLetters = new Set();
+
+        /* =====================================================================
+           3A. STATE & ENGINE MULTIPLAYER DARING REAL-TIME (LINTAS HP / TAB)
+           Mendukung:
+           1. Firebase Cloud Firestore (Real-time di lingkungan Cloud)
+           2. Google Apps Script Room Sync (Jika GAS dideploy dengan action Room)
+           3. BroadcastChannel Antar-Tab Browser (Instan tanpa jeda)
+           ===================================================================== */
+        const CLIENT_SESSION_ID = "CL_" + Math.random().toString(36).substring(2, 10).toUpperCase();
+        let multiplayerMode = "local"; // 'local' | 'host' | 'join'
+        let activeRoomCode = "";
+        let myAssignedRole = "ALL"; // 'ALL', '0', '1', '2', '3', atau 'SPECTATOR'
+        let lastAppliedEventId = "";
+        let lastAppliedStateVersion = 0;
+        let isApplyingRemoteState = false;
+        let localBroadcastChannel = null;
+        let gasRoomPollTimer = null;
+
+        try {
+            if (typeof BroadcastChannel !== "undefined") {
+                localBroadcastChannel = new BroadcastChannel("ular_tangga_3d_live_channel");
+                localBroadcastChannel.onmessage = (ev) => {
+                    if (ev.data && ev.data.roomCode === activeRoomCode) {
+                        handleIncomingRoomSnapshot(ev.data);
+                    }
+                };
+            }
+        } catch (e) {}
+
+        function generateRoomCode() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let code = "UT";
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function selectMultiplayerMode(mode) {
+            multiplayerMode = mode;
+            const tabLocal = document.getElementById('tab-mode-local');
+            const tabHost = document.getElementById('tab-mode-host');
+            const tabJoin = document.getElementById('tab-mode-join');
+            const panelJoin = document.getElementById('panel-join-room');
+            const panelHost = document.getElementById('panel-host-room-info');
+
+            const baseClass = "p-2.5 rounded-xl border border-slate-700 bg-slate-900/80 text-left transition flex items-center gap-2.5";
+            tabLocal.className = baseClass;
+            tabHost.className = baseClass;
+            tabJoin.className = baseClass;
+            panelJoin.classList.add('hidden');
+            panelHost.classList.add('hidden');
+
+            if (mode === 'local') {
+                tabLocal.className = "p-2.5 rounded-xl border-2 border-cyan-400 bg-cyan-500/20 text-left transition flex items-center gap-2.5";
+            } else if (mode === 'host') {
+                tabHost.className = "p-2.5 rounded-xl border-2 border-emerald-400 bg-emerald-500/20 text-left transition flex items-center gap-2.5";
+                panelHost.classList.remove('hidden');
+            } else if (mode === 'join') {
+                tabJoin.className = "p-2.5 rounded-xl border-2 border-amber-400 bg-amber-500/20 text-left transition flex items-center gap-2.5";
+                panelJoin.classList.remove('hidden');
+            }
+        }
+
+        function getInviteUrlForRoom(code) {
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set('room', code);
+                return url.toString();
+            } catch (e) {
+                return window.location.origin + window.location.pathname + "?room=" + code;
+            }
+        }
+
+        function updateRoomBadgeUI() {
+            const badge = document.getElementById('hud-room-badge');
+            const codeText = document.getElementById('hud-room-code-text');
+            const inactiveBox = document.getElementById('share-room-inactive-box');
+            const activeBox = document.getElementById('share-room-active-box');
+
+            if (activeRoomCode) {
+                badge.classList.remove('hidden');
+                badge.classList.add('inline-flex');
+                const roleLabel = myAssignedRole === 'ALL'
+                    ? 'Semua Tim'
+                    : (myAssignedRole === 'SPECTATOR' ? 'Penonton' : `P${parseInt(myAssignedRole, 10) + 1}`);
+                codeText.textContent = `ROOM: ${activeRoomCode} (${roleLabel})`;
+
+                if (inactiveBox && activeBox) {
+                    inactiveBox.classList.add('hidden');
+                    activeBox.classList.remove('hidden');
+                    document.getElementById('share-modal-room-code').textContent = activeRoomCode;
+                    document.getElementById('share-modal-room-link').value = getInviteUrlForRoom(activeRoomCode);
+                    const selRole = document.getElementById('select-active-my-role');
+                    if (selRole) selRole.value = myAssignedRole;
+                }
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('inline-flex');
+                if (inactiveBox && activeBox) {
+                    inactiveBox.classList.remove('hidden');
+                    activeBox.classList.add('hidden');
+                }
+            }
+        }
+
+        function canLocalUserActNow() {
+            if (!activeRoomCode || myAssignedRole === "ALL") return true;
+            if (myAssignedRole === "SPECTATOR") return false;
+            return String(currentTurnIndex) === String(myAssignedRole);
+        }
+
+        function updateTurnActionLockUI() {
+            const btnRoll = document.getElementById('btn-roll-dice');
+            if (!btnRoll) return;
+
+            if (!canLocalUserActNow()) {
+                btnRoll.disabled = true;
+                btnRoll.classList.add('opacity-60', 'cursor-not-allowed');
+                const activeP = players[currentTurnIndex];
+                const labelSpan = btnRoll.querySelector('span:last-child');
+                if (labelSpan && activeP) {
+                    labelSpan.textContent = `Menunggu ${activeP.name}...`;
+                }
+            } else if (!isAnimating) {
+                btnRoll.disabled = false;
+                btnRoll.classList.remove('opacity-60', 'cursor-not-allowed');
+                const labelSpan = btnRoll.querySelector('span:last-child');
+                if (labelSpan) {
+                    labelSpan.textContent = `Benar/Salah [SPASI]`;
+                }
+            }
+        }
+
+        function serializeCurrentQuizState(extraEvent = null) {
+            const modalQuizOpen = !document.getElementById('modal-quiz').classList.contains('hidden');
+            if (!modalQuizOpen || !pendingQuizContext) return null;
+            return {
+                isOpen: true,
+                stage: pendingQuizContext.stage,
+                requiredType: pendingQuizContext.requiredType,
+                fromTile: pendingQuizContext.fromTile,
+                toTile: pendingQuizContext.toTile,
+                questionObj: pendingQuizContext.questionObj,
+                answeredCorrectly: pendingQuizContext.answeredCorrectly,
+                pgkSelected: Array.from(pgkSelectedLetters),
+                feedbackVisible: !document.getElementById('quiz-feedback-box').classList.contains('hidden'),
+                feedbackHtmlTitle: document.getElementById('quiz-feedback-title').innerHTML,
+                feedbackHtmlExp: document.getElementById('quiz-explanation-text').innerHTML
+            };
+        }
+
+        async function broadcastGameStateToRoom(actionEvent = null) {
+            if (!activeRoomCode || isApplyingRemoteState) return;
+
+            lastAppliedStateVersion += 1;
+            const eventId = actionEvent ? `${CLIENT_SESSION_ID}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` : lastAppliedEventId;
+            if (actionEvent) {
+                lastAppliedEventId = eventId;
+            }
+
+            const pkgQuestions = questionDatabase[activePackageName] || [];
+            const payload = {
+                roomCode: activeRoomCode,
+                senderId: CLIENT_SESSION_ID,
+                version: lastAppliedStateVersion,
+                updatedAt: Date.now(),
+                activePackageName,
+                customPackageQuestionsJSON: JSON.stringify(pkgQuestions.slice(0, 60)),
+                playersJSON: JSON.stringify(players),
+                currentTurnIndex,
+                roundNumber,
+                isAnimating,
+                statusLogHtml: document.getElementById('status-log').innerHTML,
+                diceHtml: document.getElementById('dice-dots-container').innerHTML,
+                diceLabel: document.getElementById('dice-number-label').textContent,
+                quizStateJSON: JSON.stringify(serializeCurrentQuizState()),
+                eventId: eventId || "",
+                eventJSON: actionEvent ? JSON.stringify(actionEvent) : ""
+            };
+
+            // 1. Kirim ke tab lokal jika ada yang membuka di browser yang sama
+            if (localBroadcastChannel) {
+                try { localBroadcastChannel.postMessage(payload); } catch (e) {}
+            }
+
+            // 2. Kirim ke Firebase Cloud Firestore (Real-time Lintas HP)
+            if (window.CloudRoomBridge && window.CloudRoomBridge.ready) {
+                await window.CloudRoomBridge.pushRoomState(activeRoomCode, payload);
+            }
+
+            // 3. Fallback simpan ke localStorage dengan key room
+            try {
+                localStorage.setItem("UT3D_ROOM_" + activeRoomCode, JSON.stringify(payload));
+            } catch (e) {}
+        }
+
+        async function handleIncomingRoomSnapshot(data) {
+            if (!data || data.roomCode !== activeRoomCode) return;
+            if (data.senderId === CLIENT_SESSION_ID && data.version <= lastAppliedStateVersion) return;
+
+            isApplyingRemoteState = true;
+            try {
+                lastAppliedStateVersion = Math.max(lastAppliedStateVersion, data.version || 1);
+
+                // Sinkronisasi paket soal jika paket berasal dari unggahan kustom Host
+                if (data.activePackageName) {
+                    activePackageName = data.activePackageName;
+                    if (!questionDatabase[activePackageName] && data.customPackageQuestionsJSON) {
+                        try {
+                            const customQ = JSON.parse(data.customPackageQuestionsJSON);
+                            if (Array.isArray(customQ) && customQ.length > 0) {
+                                questionDatabase[activePackageName] = customQ;
+                            }
+                        } catch (e) {}
+                    }
+                    document.getElementById('hud-package-badge').textContent = activePackageName;
+                    const pkgQuestions = questionDatabase[activePackageName] || [];
+                    document.getElementById('quiz-bank-counter').textContent = `${pkgQuestions.length} Soal Aktif`;
+                }
+
+                // Cek apakah ada Event Animasi Dadu / Langkah Pion Baru yang belum dijalankan di perangkat ini
+                let incomingEvent = null;
+                if (data.eventId && data.eventId !== lastAppliedEventId && data.eventJSON) {
+                    lastAppliedEventId = data.eventId;
+                    try { incomingEvent = JSON.parse(data.eventJSON); } catch (e) {}
+                }
+
+                // Sinkronisasi daftar pemain
+                if (data.playersJSON) {
+                    const incomingPlayers = JSON.parse(data.playersJSON);
+                    const needRebuildPawns = incomingPlayers.length !== players.length;
+
+                    if (incomingEvent && incomingEvent.type === 'DICE_ROLL_MOVE') {
+                        // Biarkan animasi langkah pion berjalan mulus dari posisi sebelumnya
+                        players = incomingPlayers.map((p, idx) => ({
+                            ...p,
+                            position: (idx === incomingEvent.playerIdx && incomingEvent.fromPos) ? incomingEvent.fromPos : p.position
+                        }));
+                    } else {
+                        players = incomingPlayers;
+                    }
+
+                    if (needRebuildPawns) {
+                        buildPawns3D();
+                    } else {
+                        updateAllPawnPositionsImmediate();
+                    }
+                }
+
+                currentTurnIndex = typeof data.currentTurnIndex === 'number' ? data.currentTurnIndex : 0;
+                roundNumber = typeof data.roundNumber === 'number' ? data.roundNumber : 1;
+                isAnimating = Boolean(data.isAnimating);
+
+                if (data.statusLogHtml) {
+                    document.getElementById('status-log').innerHTML = data.statusLogHtml;
+                }
+                if (data.diceHtml) {
+                    document.getElementById('dice-dots-container').innerHTML = data.diceHtml;
+                }
+                if (data.diceLabel) {
+                    document.getElementById('dice-number-label').textContent = data.diceLabel;
+                }
+
+                updateHUD();
+
+                // Jalankan animasi visual jika ada event DICE_ROLL_MOVE, LADDER_SLIDE, atau SNAKE_SLIDE dari pemain lain
+                if (incomingEvent) {
+                    if (incomingEvent.type === 'DICE_ROLL_MOVE') {
+                        closeQuizModalUIOnly();
+                        await playRemoteDiceAndPawnAnimation(incomingEvent.playerIdx, incomingEvent.rolledValue, incomingEvent.fromPos);
+                    } else if (incomingEvent.type === 'LADDER_SLIDE') {
+                        closeQuizModalUIOnly();
+                        sfx.ladderClimb();
+                        const mesh = pawnMeshes[incomingEvent.playerIdx];
+                        if (mesh) {
+                            await animateLinearSlide(mesh, tileCenters[incomingEvent.fromTile], tileCenters[incomingEvent.toTile], 900);
+                        }
+                        if (players[incomingEvent.playerIdx]) {
+                            players[incomingEvent.playerIdx].position = incomingEvent.toTile;
+                        }
+                        updateAllPawnPositionsImmediate();
+                        updateHUD();
+                    } else if (incomingEvent.type === 'SNAKE_SLIDE') {
+                        closeQuizModalUIOnly();
+                        sfx.snakeSlide();
+                        const mesh = pawnMeshes[incomingEvent.playerIdx];
+                        if (mesh) {
+                            await animateLinearSlide(mesh, tileCenters[incomingEvent.fromTile], tileCenters[incomingEvent.toTile], 950);
+                        }
+                        if (players[incomingEvent.playerIdx]) {
+                            players[incomingEvent.playerIdx].position = incomingEvent.toTile;
+                        }
+                        updateAllPawnPositionsImmediate();
+                        updateHUD();
+                    } else if (incomingEvent.type === 'VICTORY' && players[incomingEvent.playerIdx]) {
+                        triggerVictory(players[incomingEvent.playerIdx]);
+                    }
+                }
+
+                // Sinkronisasi tampilan Modal Kuis agar semua penonton/pemain melihat soal & jawaban yang sama persis
+                if (data.quizStateJSON) {
+                    const qState = JSON.parse(data.quizStateJSON);
+                    if (qState && qState.isOpen && qState.questionObj) {
+                        renderRemoteQuizModalState(qState);
+                    } else {
+                        closeQuizModalUIOnly();
+                    }
+                } else {
+                    closeQuizModalUIOnly();
+                }
+
+                updateTurnActionLockUI();
+            } catch (err) {
+                console.warn("Error menerapkan sinkronisasi room:", err);
+            } finally {
+                isApplyingRemoteState = false;
+            }
+        }
+
+        function closeQuizModalUIOnly() {
+            const modal = document.getElementById('modal-quiz');
+            if (modal && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            pendingQuizContext = null;
+        }
+
+        function renderRemoteQuizModalState(qState) {
+            pendingQuizContext = {
+                stage: qState.stage,
+                requiredType: qState.requiredType,
+                fromTile: qState.fromTile,
+                toTile: qState.toTile,
+                questionObj: qState.questionObj,
+                answeredCorrectly: qState.answeredCorrectly
+            };
+            pgkSelectedLetters = new Set(qState.pgkSelected || []);
+
+            const modal = document.getElementById('modal-quiz');
+            const wasHidden = modal.classList.contains('hidden');
+            if (wasHidden) {
+                sfx.quizPop();
+            }
+
+            // Render UI modal menggunakan fungsi standar namun tanpa mengacak ulang soal
+            populateQuizModalDOM(qState.stage, qState.requiredType, qState.fromTile, qState.toTile, qState.questionObj);
+
+            // Terapkan kembali pilihan PGK jika ada yang dicentang
+            if (qState.requiredType === 'PGK' && Array.isArray(qState.pgkSelected)) {
+                const btns = document.querySelectorAll('#quiz-options-grid .pgk-option-btn');
+                btns.forEach(btn => {
+                    const bIdx = parseInt(btn.getAttribute('data-idx'), 10);
+                    if (pgkSelectedLetters.has(bIdx)) {
+                        const box = btn.querySelector('.pgk-checkbox');
+                        const checkIcon = box.querySelector('i');
+                        btn.classList.remove('border-slate-700', 'bg-slate-900/90');
+                        btn.classList.add('border-emerald-400', 'bg-emerald-950/40');
+                        box.classList.remove('bg-slate-800', 'border-slate-600');
+                        box.classList.add('bg-emerald-400', 'border-emerald-300');
+                        checkIcon.classList.remove('opacity-0');
+                    }
+                });
+            }
+
+            // Jika jawaban sudah dievaluasi oleh pemain aktif, tampilkan hasil pembahasannya di semua layar
+            if (qState.feedbackVisible) {
+                const feedbackBox = document.getElementById('quiz-feedback-box');
+                const feedbackTitle = document.getElementById('quiz-feedback-title');
+                const explanationText = document.getElementById('quiz-explanation-text');
+                const continueBtn = document.getElementById('btn-quiz-continue');
+
+                feedbackBox.classList.remove('hidden');
+                continueBtn.classList.remove('hidden');
+                document.getElementById('btn-submit-pgk').classList.add('hidden');
+
+                feedbackBox.className = qState.answeredCorrectly
+                    ? "p-4 rounded-2xl bg-emerald-950/75 border border-emerald-400/60 mb-4"
+                    : "p-4 rounded-2xl bg-rose-950/75 border border-rose-400/60 mb-4";
+
+                feedbackTitle.innerHTML = qState.feedbackHtmlTitle || "";
+                explanationText.innerHTML = qState.feedbackHtmlExp || "";
+
+                const allBtns = document.querySelectorAll('#quiz-options-grid button');
+                allBtns.forEach(b => { b.disabled = true; });
+            }
+
+            // Kunci tombol interaksi di dalam modal kuis jika bukan giliran perangkat ini
+            if (!canLocalUserActNow()) {
+                const allBtns = document.querySelectorAll('#quiz-options-grid button');
+                allBtns.forEach(b => { b.disabled = true; });
+                document.getElementById('btn-submit-pgk').disabled = true;
+                document.getElementById('btn-quiz-continue').disabled = true;
+            } else {
+                document.getElementById('btn-submit-pgk').disabled = false;
+                document.getElementById('btn-quiz-continue').disabled = false;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        async function playRemoteDiceAndPawnAnimation(playerIdx, rolledValue, fromPos) {
+            const diceBox = document.getElementById('dice-box');
+            const diceDots = document.getElementById('dice-dots-container');
+            const diceLabel = document.getElementById('dice-number-label');
+            const diceIcons = ['fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six'];
+
+            diceBox.classList.add('dice-rolling');
+            for (let i = 0; i < 8; i++) {
+                const tempFace = Math.floor(Math.random() * 6);
+                diceDots.innerHTML = `<i class="fa-solid ${diceIcons[tempFace]}"></i>`;
+                diceLabel.textContent = 'MEMUTAR...';
+                sfx.diceTick();
+                await sleep(55);
+            }
+            diceBox.classList.remove('dice-rolling');
+            diceDots.innerHTML = `<i class="fa-solid ${diceIcons[rolledValue - 1]}"></i>`;
+            diceLabel.textContent = `ANGKA ${rolledValue}`;
+
+            const player = players[playerIdx];
+            const mesh = pawnMeshes[playerIdx];
+            if (!player || !mesh) return;
+
+            let currentTile = fromPos || player.position;
+            let direction = 1;
+            for (let s = 0; s < rolledValue; s++) {
+                let nextTile = currentTile + direction;
+                if (nextTile > 100) {
+                    direction = -1;
+                    nextTile = 99;
+                }
+                await animateParabolicHop(mesh, tileCenters[currentTile].clone(), tileCenters[nextTile].clone(), 0.9, 200);
+                sfx.stepHop();
+                currentTile = nextTile;
+                player.position = currentTile;
+                updateHUD();
+            }
+            updateAllPawnPositionsImmediate();
+        }
+
+        async function joinExistingOnlineRoom(codeOverride = null) {
+            const inputEl = document.getElementById('input-join-room-code');
+            const rawCode = codeOverride || (inputEl ? inputEl.value : "");
+            const cleanCode = String(rawCode || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+            const feedbackEl = document.getElementById('online-room-feedback');
+            feedbackEl.classList.remove('hidden');
+
+            if (cleanCode.length < 4) {
+                sfx.wrongAnswer();
+                feedbackEl.className = "p-2.5 rounded-xl text-xs font-medium border bg-rose-950/70 border-rose-400/50 text-rose-200";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i>Masukkan Kode Akses Room yang valid (contoh: <strong>UT889A</strong>).`;
+                return;
+            }
+
+            feedbackEl.className = "p-2.5 rounded-xl text-xs font-medium border bg-cyan-950/70 border-cyan-400/50 text-cyan-200";
+            feedbackEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i>Menghubungkan ke Room <strong>${cleanCode}</strong>...`;
+
+            const roleSelect = document.getElementById('select-join-role');
+            myAssignedRole = roleSelect ? roleSelect.value : "ALL";
+            activeRoomCode = cleanCode;
+
+            // Cek dari Cloud Firestore atau LocalStorage
+            let roomData = null;
+            if (window.CloudRoomBridge && window.CloudRoomBridge.ready) {
+                roomData = await window.CloudRoomBridge.fetchRoomOnce(cleanCode);
+            }
+            if (!roomData) {
+                try {
+                    const localRaw = localStorage.getItem("UT3D_ROOM_" + cleanCode);
+                    if (localRaw) roomData = JSON.parse(localRaw);
+                } catch (e) {}
+            }
+
+            if (window.CloudRoomBridge && window.CloudRoomBridge.ready) {
+                window.CloudRoomBridge.listenToRoom(cleanCode, (snapData) => {
+                    handleIncomingRoomSnapshot(snapData);
+                });
+            }
+
+            updateRoomBadgeUI();
+
+            if (roomData) {
+                sfx.correctAnswer();
+                closeSetupModal();
+                await handleIncomingRoomSnapshot(roomData);
+                setLog(`🌐 Terhubung ke Room Daring <strong>${cleanCode}</strong>! Tampilan Anda tersinkronisasi secara real-time.`);
+            } else {
+                // Jika room baru dibuat atau menunggu host memulai
+                sfx.correctAnswer();
+                closeSetupModal();
+                setLog(`🌐 Terhubung ke Room <strong>${cleanCode}</strong>! Menunggu Host memulai atau melakukan giliran...`);
+                await broadcastGameStateToRoom();
+            }
+        }
+
+        async function activateLiveRoomFromCurrentGame() {
+            if (!activeRoomCode) {
+                activeRoomCode = generateRoomCode();
+            }
+            myAssignedRole = "ALL";
+            if (window.CloudRoomBridge && window.CloudRoomBridge.ready) {
+                window.CloudRoomBridge.listenToRoom(activeRoomCode, (snapData) => {
+                    handleIncomingRoomSnapshot(snapData);
+                });
+            }
+            updateRoomBadgeUI();
+            await broadcastGameStateToRoom();
+            sfx.correctAnswer();
+            setLog(`📡 Room Daring <strong>${activeRoomCode}</strong> aktif! Bagikan Kode Akses atau Link ke HP pemain lain.`);
+        }
+
+        function leaveOnlineRoom() {
+            if (window.CloudRoomBridge) {
+                window.CloudRoomBridge.stopListening();
+            }
+            activeRoomCode = "";
+            myAssignedRole = "ALL";
+            updateRoomBadgeUI();
+            updateTurnActionLockUI();
+            closeShareRoomModal();
+            setLog(`Mode Room Daring telah diputuskan. Kembali ke Mode 1 Perangkat.`);
+        }
+
+        function updateMyLocalRole(newRole) {
+            myAssignedRole = newRole;
+            updateRoomBadgeUI();
+            updateTurnActionLockUI();
+        }
+
+        function openShareRoomModal() {
+            updateRoomBadgeUI();
+            const modal = document.getElementById('modal-share-room');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeShareRoomModal() {
+            const modal = document.getElementById('modal-share-room');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function copyRoomCodeText() {
+            const temp = document.createElement('textarea');
+            temp.value = activeRoomCode;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            const lbl = document.getElementById('lbl-copy-code');
+            lbl.textContent = "Tersalin!";
+            setTimeout(() => { lbl.textContent = "Salin Kode"; }, 2000);
+        }
+
+        function copyRoomInviteLink() {
+            const linkInput = document.getElementById('share-modal-room-link');
+            linkInput.select();
+            document.execCommand('copy');
+            const lbl = document.getElementById('lbl-copy-link');
+            lbl.textContent = "Link Tersalin!";
+            setTimeout(() => { lbl.textContent = "Salin Link"; }, 2000);
+        }
+
+        window.onCloudBridgeInitialized = function(isReady) {
+            const pill = document.getElementById('online-conn-pill');
+            if (pill) {
+                if (isReady) {
+                    pill.className = "text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40";
+                    pill.innerHTML = `<i class="fa-solid fa-cloud-bolt mr-1"></i>Cloud Sync Siap`;
+                } else {
+                    pill.className = "text-[10px] font-bold px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40";
+                    pill.innerHTML = `<i class="fa-solid fa-wifi mr-1"></i>Multi-Tab & Link Siap`;
+                }
+            }
+
+            // Cek otomatis jika URL mengandung parameter ?room=KODE
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const roomParam = params.get('room');
+                if (roomParam && roomParam.trim().length >= 4) {
+                    const code = roomParam.trim().toUpperCase();
+                    selectMultiplayerMode('join');
+                    const joinInput = document.getElementById('input-join-room-code');
+                    if (joinInput) joinInput.value = code;
+                    joinExistingOnlineRoom(code);
+                }
+            } catch (e) {}
+        };
 
         /* =====================================================================
            3B. FUNGSI PARSER & NORMALISASI KUNCI JAWABAN (MENDUKUNG 5 OPSI A s.d. E)
@@ -2271,6 +3097,27 @@ function doPost(e) {
             updateHUD();
             setLog(`Paket <strong>${activePackageName}</strong> (${pkgQuestions.length} soal) dimulai dari awal! Giliran <strong>${players[0].name}</strong>.`);
             closeSetupModal();
+
+            // Jika pengguna memilih mode "Buat Room Daring" saat memulai permainan
+            if (multiplayerMode === 'host') {
+                if (!activeRoomCode) {
+                    activeRoomCode = generateRoomCode();
+                }
+                const hostRoleSelect = document.getElementById('select-host-role');
+                myAssignedRole = hostRoleSelect ? hostRoleSelect.value : 'ALL';
+
+                if (window.CloudRoomBridge && window.CloudRoomBridge.ready) {
+                    window.CloudRoomBridge.listenToRoom(activeRoomCode, (snapData) => {
+                        handleIncomingRoomSnapshot(snapData);
+                    });
+                }
+                updateRoomBadgeUI();
+                updateTurnActionLockUI();
+                broadcastGameStateToRoom();
+                openShareRoomModal();
+            } else if (multiplayerMode === 'local' && activeRoomCode) {
+                broadcastGameStateToRoom();
+            }
         }
 
         function updateHUD() {
@@ -2317,6 +3164,7 @@ function doPost(e) {
                 document.getElementById('active-player-pos').textContent = `Posisi: Petak ${activeP.position} / 100`;
                 document.getElementById('turn-counter-badge').textContent = `Putaran #${roundNumber}`;
             }
+            updateTurnActionLockUI();
         }
 
         function setLog(htmlMsg) {
@@ -2357,6 +3205,10 @@ function doPost(e) {
         // STEP 1: Saat pemain menekan tombol "Ambil Giliran Dadu", muncul Kuis Benar-Salah (BS) terlebih dahulu!
         function initiateTurnDiceQuiz() {
             if (isAnimating || players.length === 0) return;
+            if (!canLocalUserActNow()) {
+                sfx.wrongAnswer();
+                return;
+            }
             isAnimating = true;
 
             const btnRoll = document.getElementById('btn-roll-dice');
@@ -2366,27 +3218,8 @@ function doPost(e) {
             openQuizModal('dice', players[currentTurnIndex].position, null);
         }
 
-        function openQuizModal(stage, fromTile, toTile) {
-            sfx.quizPop();
-            const activePlayer = players[currentTurnIndex];
-
-            let requiredType = 'BS';
-            if (stage === 'ladder') requiredType = 'PGK';
-            else if (stage === 'snake') requiredType = 'PG';
-
-            const questionObj = getQuestionByType(requiredType);
-
-            pendingQuizContext = {
-                stage,
-                requiredType,
-                fromTile,
-                toTile,
-                questionObj,
-                answeredCorrectly: false
-            };
-            pgkSelectedLetters.clear();
-
-            const modal = document.getElementById('modal-quiz');
+        function populateQuizModalDOM(stage, requiredType, fromTile, toTile, questionObj) {
+            const activePlayer = players[currentTurnIndex] || DEFAULT_TEAMS[0];
             const banner = document.getElementById('quiz-header-banner');
             const iconBox = document.getElementById('quiz-icon-box');
             const badge = document.getElementById('quiz-mode-badge');
@@ -2432,9 +3265,34 @@ function doPost(e) {
 
             document.getElementById('quiz-feedback-box').classList.add('hidden');
             document.getElementById('btn-quiz-continue').classList.add('hidden');
+        }
 
+        function openQuizModal(stage, fromTile, toTile) {
+            sfx.quizPop();
+
+            let requiredType = 'BS';
+            if (stage === 'ladder') requiredType = 'PGK';
+            else if (stage === 'snake') requiredType = 'PG';
+
+            const questionObj = getQuestionByType(requiredType);
+
+            pendingQuizContext = {
+                stage,
+                requiredType,
+                fromTile,
+                toTile,
+                questionObj,
+                answeredCorrectly: false
+            };
+            pgkSelectedLetters.clear();
+
+            populateQuizModalDOM(stage, requiredType, fromTile, toTile, questionObj);
+
+            const modal = document.getElementById('modal-quiz');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+
+            broadcastGameStateToRoom();
         }
 
         function renderQuizOptionsByStage(requiredType, questionObj) {
@@ -2535,6 +3393,7 @@ function doPost(e) {
                 box.classList.add('bg-emerald-400', 'border-emerald-300');
                 checkIcon.classList.remove('opacity-0');
             }
+            broadcastGameStateToRoom();
         }
 
         function evaluateBSOrPGAnswer(selectedIdx) {
@@ -2662,6 +3521,7 @@ function doPost(e) {
 
             explanationText.innerHTML = `<span class="text-cyan-300 font-bold">Kunci Jawaban [${expectedKeyStr}]:</span> ${cleanExp}`;
             updateHUD();
+            broadcastGameStateToRoom();
         }
 
         async function finishQuizStage() {
@@ -2695,8 +3555,14 @@ function doPost(e) {
                 if (answeredCorrectly) {
                     sfx.ladderClimb();
                     setLog(`🚀 <strong>${activePlayer.name}</strong> menaklukkan soal PG Kompleks dan naik tangga dari Petak ${fromTile} ke <strong>Petak ${toTile}</strong>!`);
-                    await animateLinearSlide(mesh, tileCenters[fromTile], tileCenters[toTile], 900);
                     activePlayer.position = toTile;
+                    broadcastGameStateToRoom({
+                        type: 'LADDER_SLIDE',
+                        playerIdx: currentTurnIndex,
+                        fromTile,
+                        toTile
+                    });
+                    await animateLinearSlide(mesh, tileCenters[fromTile], tileCenters[toTile], 900);
                 } else {
                     setLog(`💡 <strong>${activePlayer.name}</strong> belum tepat menjawab PG Kompleks di kaki tangga dan tetap di Petak ${fromTile}.`);
                 }
@@ -2708,8 +3574,14 @@ function doPost(e) {
                 } else {
                     sfx.snakeSlide();
                     setLog(`🐍 <strong>${activePlayer.name}</strong> tergelincir turun mengikuti Ular dari Petak ${fromTile} ke <strong>Petak ${toTile}</strong>.`);
-                    await animateLinearSlide(mesh, tileCenters[fromTile], tileCenters[toTile], 950);
                     activePlayer.position = toTile;
+                    broadcastGameStateToRoom({
+                        type: 'SNAKE_SLIDE',
+                        playerIdx: currentTurnIndex,
+                        fromTile,
+                        toTile
+                    });
+                    await animateLinearSlide(mesh, tileCenters[fromTile], tileCenters[toTile], 950);
                 }
             }
 
@@ -2747,7 +3619,28 @@ function doPost(e) {
             diceLabel.textContent = `ANGKA ${rolledValue}`;
 
             const activePlayer = players[currentTurnIndex];
+            const fromPos = activePlayer.position;
             setLog(`🎲 <strong>${activePlayer.name}</strong> berhak mengocok dadu dan mendapat angka <strong class="text-cyan-300">${rolledValue}</strong>!`);
+
+            // Hitung posisi tujuan terlebih dahulu agar dapat disiarkan ke pemain daring lainnya bersamaan dengan animasi
+            let simTile = fromPos;
+            let simDir = 1;
+            for (let s = 0; s < rolledValue; s++) {
+                let nextT = simTile + simDir;
+                if (nextT > 100) {
+                    simDir = -1;
+                    nextT = 99;
+                }
+                simTile = nextT;
+            }
+            activePlayer.position = simTile;
+            broadcastGameStateToRoom({
+                type: 'DICE_ROLL_MOVE',
+                playerIdx: currentTurnIndex,
+                rolledValue,
+                fromPos
+            });
+            activePlayer.position = fromPos;
 
             await movePawnStepByStep(currentTurnIndex, rolledValue);
         }
@@ -2779,6 +3672,7 @@ function doPost(e) {
             updateAllPawnPositionsImmediate();
 
             if (player.position === 100) {
+                broadcastGameStateToRoom({ type: 'VICTORY', playerIdx });
                 triggerVictory(player);
                 return;
             }
@@ -2851,6 +3745,7 @@ function doPost(e) {
             btnRoll.disabled = false;
             btnRoll.classList.remove('opacity-60', 'cursor-not-allowed');
             updateHUD();
+            broadcastGameStateToRoom();
         }
 
         function triggerVictory(winnerPlayer) {
@@ -2927,6 +3822,7 @@ function doPost(e) {
             });
             updateAllPawnPositionsImmediate();
             updateHUD();
+            broadcastGameStateToRoom();
 
             openSetupModal();
         }
